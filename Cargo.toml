@@ -1,0 +1,10 @@
+[package]
+name = "data-structures-and-algorithms-rs"
+version = "0.1.0"
+authors = ["Sho Nakatani <lay.sakura@gmail.com>"]
+description = "Data Structures and Algorithms in Rust"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/laysakura/data-structures-and-algorithms-rs"
+homepage = "https://github.com/laysakura/data-structures-and-algorithms-rs"
+edition = "2018"
