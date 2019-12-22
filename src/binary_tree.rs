@@ -17,8 +17,18 @@ pub struct TreeNode_Box {
     pub right: Option<Box<TreeNode_Box>>,
 }
 
-// in-placeで書き換えられるし、compile time な borrow check
+// 記事で使う
+#[derive(Debug, PartialEq, Eq)]
+pub enum BinaryTree<T> {
+    Nil,
+    Node {
+        val: T,
+        left: Box<BinaryTree<T>>,
+        right: Box<BinaryTree<T>>,
+    },
+}
 
+// in-placeで書き換えられるし、compile time な borrow checkができる？
 // pub struct TreeNode<'r, 'l, 'r> {
 //     pub val: i32,
 //     pub left: Option<&'l mut TreeNode<'l>>,
