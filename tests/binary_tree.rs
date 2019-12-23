@@ -4,9 +4,11 @@ use data_structures_and_algorithms_rs::{BinaryTree, TreeNode_Box, TreeNode_Rc_Re
 fn leetcode_112_path_sum_BinaryTree() {
     use BinaryTree::{Nil, Node};
 
+    // この関数を書き上げることが問題に対する回答。
+    // 二分木のルートと、目指す総和を入力に取り、
     pub fn has_path_sum(root: &BinaryTree<i32>, sum: i32) -> bool {
-        fn rec(root: &BinaryTree<i32>, cur_sum: i32, sum: i32) -> bool {
-            match root {
+        fn rec(cur_node: &BinaryTree<i32>, cur_sum: i32, sum: i32) -> bool {
+            match cur_node {
                 Nil => panic!("root が Nil のときよ呼び出さないでください"),
 
                 // box を使えばもっときれいになる
@@ -66,6 +68,86 @@ fn leetcode_112_path_sum_BinaryTree() {
         }),
     };
     assert_eq!(has_path_sum(&root, 22), true);
+}
+
+#[test]
+fn leetcode_112_path_sum_bfs() {
+    use std::collections::VecDeque;
+    use BinaryTree::{Nil, Node};
+
+    pub fn has_path_sum(root: &BinaryTree<i32>, sum: i32) -> bool {
+        // (今探索中のノード, 親ノードの値のここまでの総和) を格納するキュー
+        let mut queue = VecDeque::<(&BinaryTree<i32>, i32)>::new();
+        queue.push_back((root, 0));
+
+        while let Some((cur_node, cur_sum)) = queue.pop_front() {
+            match cur_node {
+                Nil => {
+                    panic!("Nil を queue に詰めないでください");
+                }
+                Node { val, left, right } => {
+                    let cur_sum = cur_sum + val;
+
+                    match (&(**left), &(**right)) {
+                        // Leafに到達しpathが完成したので、sumと比較
+                        (Nil, Nil) => {
+                            if cur_sum == sum {
+                                return true;
+                            }
+                        }
+
+                        (_, Nil) => queue.push_back((&(*left), cur_sum)),
+                        (Nil, _) => queue.push_back((&(*right), cur_sum)),
+                        (_, _) => {
+                            queue.push_back((&(*left), cur_sum));
+                            queue.push_back((&(*right), cur_sum));
+                        }
+                    }
+                }
+            }
+        }
+
+        false // キューは空になったが、目指す総和のpathは見つからなかった
+    }
+
+    let root = BinaryTree::<i32>::Node {
+        val: 5,
+        left: Box::new(BinaryTree::<i32>::Node {
+            val: 4,
+            left: Box::new(BinaryTree::<i32>::Node {
+                val: 11,
+                left: Box::new(BinaryTree::<i32>::Node {
+                    val: 7,
+                    left: Box::new(Nil),
+                    right: Box::new(Nil),
+                }),
+                right: Box::new(BinaryTree::<i32>::Node {
+                    val: 2,
+                    left: Box::new(Nil),
+                    right: Box::new(Nil),
+                }),
+            }),
+            right: Box::new(Nil),
+        }),
+        right: Box::new(BinaryTree::<i32>::Node {
+            val: 8,
+            left: Box::new(BinaryTree::<i32>::Node {
+                val: 13,
+                left: Box::new(Nil),
+                right: Box::new(Nil),
+            }),
+            right: Box::new(BinaryTree::<i32>::Node {
+                val: 4,
+                left: Box::new(Nil),
+                right: Box::new(BinaryTree::<i32>::Node {
+                    val: 1,
+                    left: Box::new(Nil),
+                    right: Box::new(Nil),
+                }),
+            }),
+        }),
+    };
+    assert_eq!(has_path_sum(&root, 23), true);
 }
 
 #[test]
