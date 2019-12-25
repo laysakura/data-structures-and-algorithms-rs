@@ -113,6 +113,38 @@ impl<T: Ord> BinarySearchTree<T> {
     }
 }
 
+impl<T: Ord> BinarySearchTree<T> {
+    pub fn get_range_sorted(&self, min: &T, max: &T) -> Vec<&T> {
+        let mut ret = Vec::<&T>::new();
+        Self::get_range_sorted_inner(&self.0, min, max, &mut ret);
+        ret
+    }
+
+    /// in-place order で ret にノード値を追加していく
+    fn get_range_sorted_inner<'bst, 'a>(
+        cur_node: &'bst BinarySearchTreeInner<T>,
+        min: &T,
+        max: &T,
+        ret: &'a mut Vec<&'bst T>,
+    ) {
+        match cur_node {
+            BinarySearchTreeInner::Nil => {}
+            BinarySearchTreeInner::Node { val, left, right } => {
+                if val >= min {
+                    // ノード値が最小値以上なら、まだ左の子ノード以下に最小値以上のノード値があり得るので、探索する。
+                    Self::get_range_sorted_inner(left, min, max, ret);
+                }
+                if min <= val && val <= max {
+                    ret.push(val);
+                }
+                if val < max {
+                    Self::get_range_sorted_inner(right, min, max, ret);
+                }
+            }
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 enum BinarySearchTreeInner<T: Ord> {
     Nil,
@@ -224,4 +256,37 @@ fn get_all_sorted() {
         bst.get_all_sorted(),
         vec![&3, &5, &5, &5, &6, &8, &8, &9, &10, &15]
     );
+}
+
+#[test]
+fn get_range_sorted() {
+    let mut bst = BinarySearchTree::new();
+    bst.add(8);
+    bst.add(5);
+    bst.add(10);
+    bst.add(5);
+    bst.add(3);
+    bst.add(5);
+    bst.add(6);
+    bst.add(8);
+    bst.add(9);
+    bst.add(15);
+
+    assert_eq!(
+        bst.get_range_sorted(&3, &15),
+        vec![&3, &5, &5, &5, &6, &8, &8, &9, &10, &15]
+    );
+    assert_eq!(
+        bst.get_range_sorted(&3, &15),
+        vec![&3, &5, &5, &5, &6, &8, &8, &9, &10, &15]
+    );
+    assert_eq!(
+        bst.get_range_sorted(&5, &15),
+        vec![&5, &5, &5, &6, &8, &8, &9, &10, &15]
+    );
+    assert_eq!(
+        bst.get_range_sorted(&5, &14),
+        vec![&5, &5, &5, &6, &8, &8, &9, &10]
+    );
+    assert_eq!(bst.get_range_sorted(&5, &5), vec![&5, &5, &5]);
 }
