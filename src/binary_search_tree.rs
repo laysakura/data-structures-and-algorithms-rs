@@ -1,6 +1,7 @@
 /// 二分探索木。
 /// あるノードと等しい値は、必ず左側の子ノード以下に入ることとする。
 ///
+/// ```text
 ///          8
 ///       __/ \__
 ///      /       \
@@ -11,6 +12,7 @@
 /// 3       8
 ///  \
 ///   5
+/// ```
 #[derive(Debug, PartialEq, Eq)]
 pub struct BinarySearchTree<T: Ord>(BinarySearchTreeInner<T>);
 
@@ -19,7 +21,9 @@ impl<T: Ord> BinarySearchTree<T> {
     pub fn new() -> Self {
         Self(BinarySearchTreeInner::Nil)
     }
+}
 
+impl<T: Ord> BinarySearchTree<T> {
     /// 二分探索木に val を追加する。
     /// val は二分探索木に組み込まれる形で move される。
     pub fn add(&mut self, val: T) {
