@@ -88,6 +88,31 @@ impl<T: Ord> BinarySearchTree<T> {
     }
 }
 
+impl<T: Ord> BinarySearchTree<T> {
+    /// 本当はイテレータを返却するほうが、一気に O(n) のメモリか確保する必要がなくて良いが、
+    /// イテレータ自体の実装で煩雑にならないようにするために &[T] を返す。
+    pub fn get_all_sorted(&self) -> Vec<&T> {
+        let mut ret = Vec::<&T>::new();
+        Self::get_all_sorted_inner(&self.0, &mut ret);
+        ret
+    }
+
+    /// in-place order で ret にノード値を追加していく
+    fn get_all_sorted_inner<'bst, 'a>(
+        cur_node: &'bst BinarySearchTreeInner<T>,
+        ret: &'a mut Vec<&'bst T>,
+    ) {
+        match cur_node {
+            BinarySearchTreeInner::Nil => {}
+            BinarySearchTreeInner::Node { val, left, right } => {
+                Self::get_all_sorted_inner(left, ret);
+                ret.push(val);
+                Self::get_all_sorted_inner(right, ret);
+            }
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 enum BinarySearchTreeInner<T: Ord> {
     Nil,
@@ -179,4 +204,24 @@ fn contains() {
     assert_eq!(bst.contains(&9), true);
     assert_eq!(bst.contains(&15), true);
     assert_eq!(bst.contains(&16), false);
+}
+
+#[test]
+fn get_all_sorted() {
+    let mut bst = BinarySearchTree::new();
+    bst.add(8);
+    bst.add(5);
+    bst.add(10);
+    bst.add(5);
+    bst.add(3);
+    bst.add(5);
+    bst.add(6);
+    bst.add(8);
+    bst.add(9);
+    bst.add(15);
+
+    assert_eq!(
+        bst.get_all_sorted(),
+        vec![&3, &5, &5, &5, &6, &8, &8, &9, &10, &15]
+    );
 }
