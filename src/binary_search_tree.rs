@@ -64,6 +64,30 @@ impl<T: Ord> BinarySearchTree<T> {
     }
 }
 
+impl<T: Ord> BinarySearchTree<T> {
+    /// 二分探索木に val が1つ以上含まれているかを返す。
+    pub fn contains(&self, val: &T) -> bool {
+        Self::contains_inner(&self.0, &val)
+    }
+
+    fn contains_inner(cur_node: &BinarySearchTreeInner<T>, val: &T) -> bool {
+        match cur_node {
+            BinarySearchTreeInner::Nil => false,
+            BinarySearchTreeInner::Node {
+                val: cur_v,
+                left,
+                right,
+            } => {
+                if cur_v == val {
+                    true
+                } else {
+                    Self::contains_inner(left, val) || Self::contains_inner(right, val)
+                }
+            }
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 enum BinarySearchTreeInner<T: Ord> {
     Nil,
@@ -133,4 +157,26 @@ fn add_in_different_order2() {
     bst2.add(5);
 
     assert_eq!(bst1, bst2);
+}
+
+#[test]
+fn contains() {
+    let mut bst = BinarySearchTree::new();
+    bst.add(8);
+    bst.add(5);
+    bst.add(10);
+    bst.add(5);
+    bst.add(3);
+    bst.add(5);
+    bst.add(6);
+    bst.add(8);
+    bst.add(9);
+    bst.add(15);
+
+    assert_eq!(bst.contains(&0), false);
+    assert_eq!(bst.contains(&5), true);
+    assert_eq!(bst.contains(&10), true);
+    assert_eq!(bst.contains(&9), true);
+    assert_eq!(bst.contains(&15), true);
+    assert_eq!(bst.contains(&16), false);
 }
