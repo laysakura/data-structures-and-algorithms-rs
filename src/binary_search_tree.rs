@@ -14,7 +14,21 @@
 ///   5
 /// ```
 #[derive(Debug, PartialEq, Eq)]
-pub struct BinarySearchTree<T: Ord>(BinarySearchTreeInner<T>);
+pub struct BinarySearchTree<T: Ord>(
+    // private に実体を持つ。enumを直接使った構築はできない。
+    BinarySearchTreeInner<T>,
+);
+
+/// 実体。二分木と同じフィールド。
+#[derive(Debug, PartialEq, Eq)]
+enum BinarySearchTreeInner<T: Ord> {
+    Nil,
+    Node {
+        val: T,
+        left: Box<Self>,
+        right: Box<Self>,
+    },
+}
 
 impl<T: Ord> BinarySearchTree<T> {
     /// 空の二分探索木をつくる。
@@ -27,9 +41,10 @@ impl<T: Ord> BinarySearchTree<T> {
     /// 二分探索木に val を追加する。
     /// val は二分探索木に組み込まれる形で move される。
     pub fn add(&mut self, val: T) {
+        // val を配置すべきNilを探索。
         let nil = Self::find_nil_to_add(&mut self.0, &val);
 
-        // ノード値が val であるようなリーフで置き換える。
+        // ノード値が val であるようなリーフを作り、Nilを置き換える。
         *nil = BinarySearchTreeInner::Node {
             val,
             left: Box::new(BinarySearchTreeInner::Nil),
@@ -37,24 +52,31 @@ impl<T: Ord> BinarySearchTree<T> {
         }
     }
 
-    /// val を二分探索木に追加する場合に、val と交換すべき箇所の Nil を、深さ優先探索で探す。
+    /// val を二分探索木に追加する場合に、val と交換すべき箇所の Nil を、深さ優先探索で探す、再帰関数。
     ///
     /// 上図の二分木の例だと、
     /// - val == 1 の場合: `3` の左の Nil
     /// - val == 5 の場合: リーフの `5` の左の Nil
     /// - val == 16 の場合: `15` の右の Nil
-    fn find_nil_to_add<'v, 'bst>(
-        cur_node: &'bst mut BinarySearchTreeInner<T>,
+    ///
+    /// 生存期間パラメータの解説:
+    /// - 't : 二分探索木自体の生存期間。 cur_node (現在探索中のノード) も、置き換えるべき Nil も、二分探索木自体の生存期と一致している。
+    /// - 'v : 追加する要素の生存期間
+    fn find_nil_to_add<'t, 'v>(
+        cur_node: &'t mut BinarySearchTreeInner<T>,
         val: &'v T,
-    ) -> &'bst mut BinarySearchTreeInner<T> {
+    ) -> &'t mut BinarySearchTreeInner<T> {
         match cur_node {
+            // Nil まで到達したら、それが val と置き換えるべき Nil。
             BinarySearchTreeInner::Nil => cur_node,
+
             BinarySearchTreeInner::Node {
                 val: cur_v,
                 left,
                 right,
             } => {
                 if val <= cur_v {
+                    // 探索中のノード値以下の値を追加したいなら、左に降りる
                     Self::find_nil_to_add(left, &val)
                 } else {
                     Self::find_nil_to_add(right, &val)
@@ -72,15 +94,18 @@ impl<T: Ord> BinarySearchTree<T> {
 
     fn contains_inner(cur_node: &BinarySearchTreeInner<T>, val: &T) -> bool {
         match cur_node {
-            BinarySearchTreeInner::Nil => false,
+            BinarySearchTreeInner::Nil => false, // たどってきたpathには val がなかった
+
             BinarySearchTreeInner::Node {
                 val: cur_v,
                 left,
                 right,
             } => {
                 if cur_v == val {
+                    // val を見つけたら、リーフまで到達していなくても、これ以上の再起をやめてtrueを返す
                     true
                 } else {
+                    // 左か右のどちらかに val があるかどうか
                     Self::contains_inner(left, val) || Self::contains_inner(right, val)
                 }
             }
@@ -89,8 +114,6 @@ impl<T: Ord> BinarySearchTree<T> {
 }
 
 impl<T: Ord> BinarySearchTree<T> {
-    /// 本当はイテレータを返却するほうが、一気に O(n) のメモリか確保する必要がなくて良いが、
-    /// イテレータ自体の実装で煩雑にならないようにするために &[T] を返す。
     pub fn get_all_sorted(&self) -> Vec<&T> {
         let mut ret = Vec::<&T>::new();
         Self::get_all_sorted_inner(&self.0, &mut ret);
@@ -98,9 +121,9 @@ impl<T: Ord> BinarySearchTree<T> {
     }
 
     /// in-place order で ret にノード値を追加していく
-    fn get_all_sorted_inner<'bst, 'a>(
-        cur_node: &'bst BinarySearchTreeInner<T>,
-        ret: &'a mut Vec<&'bst T>,
+    fn get_all_sorted_inner<'t, 'a>(
+        cur_node: &'t BinarySearchTreeInner<T>,
+        ret: &'a mut Vec<&'t T>,
     ) {
         match cur_node {
             BinarySearchTreeInner::Nil => {}
@@ -120,39 +143,30 @@ impl<T: Ord> BinarySearchTree<T> {
         ret
     }
 
-    /// in-place order で ret にノード値を追加していく
-    fn get_range_sorted_inner<'bst, 'a>(
-        cur_node: &'bst BinarySearchTreeInner<T>,
+    /// in-place order で [min, max] の範囲のノード値を検索し、 ret に追加していく
+    fn get_range_sorted_inner<'t, 'a>(
+        cur_node: &'t BinarySearchTreeInner<T>,
         min: &T,
         max: &T,
-        ret: &'a mut Vec<&'bst T>,
+        ret: &'a mut Vec<&'t T>,
     ) {
         match cur_node {
             BinarySearchTreeInner::Nil => {}
             BinarySearchTreeInner::Node { val, left, right } => {
                 if val >= min {
-                    // ノード値が最小値以上なら、まだ左の子ノード以下に最小値以上のノード値があり得るので、探索する。
+                    // cur_node の値が最小値以上なら、まだ左の子ノード以下に最小値以上のノード値があり得るので、探索する。
                     Self::get_range_sorted_inner(left, min, max, ret);
                 }
                 if min <= val && val <= max {
                     ret.push(val);
                 }
                 if val < max {
+                    // cur_node の値が最大値より小さければ、まだ右の子ノード以下に最大値以下のノード値があり得るので、探索する。
                     Self::get_range_sorted_inner(right, min, max, ret);
                 }
             }
         }
     }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-enum BinarySearchTreeInner<T: Ord> {
-    Nil,
-    Node {
-        val: T,
-        left: Box<Self>,
-        right: Box<Self>,
-    },
 }
 
 #[test]
@@ -272,10 +286,6 @@ fn get_range_sorted() {
     bst.add(9);
     bst.add(15);
 
-    assert_eq!(
-        bst.get_range_sorted(&3, &15),
-        vec![&3, &5, &5, &5, &6, &8, &8, &9, &10, &15]
-    );
     assert_eq!(
         bst.get_range_sorted(&3, &15),
         vec![&3, &5, &5, &5, &6, &8, &8, &9, &10, &15]
