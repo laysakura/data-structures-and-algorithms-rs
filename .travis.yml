@@ -1,0 +1,50 @@
+language: rust
+branches:
+  only:
+    - master
+    - /^v[0-9]/  # tag
+cache: cargo
+
+stages:
+  - pr-check-fix
+  - test
+  - doc-bench-deploy
+
+# test stage
+rust:
+  - 1.33.0  # pinned stable Rust release
+  - stable
+  #- beta
+  #- nightly
+os:
+  - linux
+  - osx
+script:
+  - cargo build --release --verbose --all
+  - cargo test --release --verbose --all
+
+jobs:
+  include:
+    - stage: pr-check-fix
+      rust: stable
+      os: linux
+      script: ./ci/pr-check-fix.sh
+
+    - stage: doc-bench-deploy
+      rust: stable
+      os: linux
+      script:
+        - cargo doc
+
+      deploy:
+        # GitHub Pages
+        - provider: pages
+          skip_cleanup: true
+          github_token: "$GITHUB_TOKEN"
+          local_dir: target/doc
+          on:
+            branch: master
+
+env:
+  global:
+    secure: "pKk4UdeXT39gzar96WXk+Q3+UawKZksOnZCZObfj3qlsQWELctjQb/VZpHJLD5mjYAtnal5dVntVbqNsimh/eVsdHnuXCTlCoEPkiSS4+b3ZzMBP/bQS2ObL6Ec2Or2pDAOoZGfz2pV+hONWDws0UeFRSdwhkT55wjv0RuJGLJDUyWjHg3g6TEPq5RK5utzyJKbT7O/OXtAHGiToE/80pSv2JLV8KJKQdgJh5DqqQrsWahOMxKxJ0ho+Q08TQIwTyPVotBtSeSbLIDRr8zRkmArgEmXfUAEsY1z0XM9y3dL36Qveydnoglj67BnsYzvVsEEyTII23DLzsl/vC8RVHJPZ1yDa2lgf6prERxi/pmsk9UmO656tBdK9sEgVmyOGlOOp/eqw4PcicVpnBWiuLUeh/AgmcdV6txzxbcMSFshykvmTaHxGf3xy0exLzSoPWobtWj5Z2Dp7YQYv55TUKAp74NUv+pGDkPFmjNCD0QnljoPjJyUSHMK3kfw8L9IqPiwPHSZLyUxHpRpa0DcGTcucFwGtJ0B5X0spS+uAzRtcGHamje9uFO+0FahzzeEAYzjyqqbNQrgzL+R0DqIcHuizYC0r3WQJ5KBWZibFzIJzttFZL2j+5hlOSe15qjHwl8fP1ZgisqI9hdt5ljrDh4oOApoW7S4v0WpjA6yx+tw="
