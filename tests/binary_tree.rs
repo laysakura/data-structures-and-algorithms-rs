@@ -204,34 +204,18 @@ fn leetcode_814_binary_tree_pruning() {
     //  /   | |   \
     // 0    0 0    1
     //
-    let mut tree = Box::new(BinaryTree::<i32>::Node {
+    let mut tree = Box::new(bin_tree! {
         val: 1,
-        left: Box::new(BinaryTree::<i32>::Node {
+        left: bin_tree! {
             val: 0,
-            left: Box::new(BinaryTree::<i32>::Node {
-                val: 0,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-            right: Box::new(BinaryTree::<i32>::Node {
-                val: 0,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-        }),
-        right: Box::new(BinaryTree::<i32>::Node {
+            left: bin_tree! { val: 0 },
+            right: bin_tree! { val: 0 },
+        },
+        right: bin_tree! {
             val: 1,
-            left: Box::new(BinaryTree::<i32>::Node {
-                val: 0,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-            right: Box::new(BinaryTree::<i32>::Node {
-                val: 1,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-        }),
+            left: bin_tree! { val: 0 },
+            right: bin_tree! { val: 1 },
+        },
     });
 
     // prune_tree(tree) した結果の期待値。
@@ -242,18 +226,12 @@ fn leetcode_814_binary_tree_pruning() {
     //     \
     //      1
     //
-    let pruned = BinaryTree::<i32>::Node {
+    let pruned = bin_tree! {
         val: 1,
-        left: Box::new(Nil),
-        right: Box::new(BinaryTree::<i32>::Node {
+        right: bin_tree! {
             val: 1,
-            left: Box::new(Nil),
-            right: Box::new(BinaryTree::<i32>::Node {
-                val: 1,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-        }),
+            right: bin_tree! { val: 1 },
+        },
     };
 
     assert_eq!(
