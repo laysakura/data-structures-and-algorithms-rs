@@ -125,12 +125,7 @@ fn test_replace() {
         },
     };
 
-    if let BinaryTree::Node {
-        val: _,
-        left: _,
-        right,
-    } = &mut tree1
-    {
+    if let BinaryTree::Node { right, .. } = &mut tree1 {
         (**right).replace(tree2); // tree1のルートの右を、Nilからtree2のルートに置き換える
     }
     assert_eq!(&tree1, &tree3);
