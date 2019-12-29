@@ -22,7 +22,7 @@ impl<T> BinaryTree<T> {
 
 #[macro_export]
 macro_rules! bin_tree {
-    (val: $val:expr, left: $left:expr, right: $right:expr,) => {
+    ( val: $val:expr, left: $left:expr, right: $right:expr $(,)* ) => {
         BinaryTree::Node {
             val: $val,
             left: Box::new($left),
@@ -30,7 +30,7 @@ macro_rules! bin_tree {
         }
     };
 
-    (val: $val:expr, right: $right:expr,) => {
+    ( val: $val:expr, right: $right:expr $(,)* ) => {
         bin_tree! {
             val: $val,
             left: bin_tree!(),
@@ -38,7 +38,7 @@ macro_rules! bin_tree {
         }
     };
 
-    (val: $val:expr, left: $left:expr,) => {
+    ( val: $val:expr, left: $left:expr $(,)* ) => {
         bin_tree! {
             val: $val,
             left: $left,
@@ -46,7 +46,7 @@ macro_rules! bin_tree {
         }
     };
 
-    (val: $val: expr) => {
+    ( val: $val:expr $(,)* ) => {
         bin_tree!(val: $val, left: bin_tree!(), right: bin_tree!(),)
     };
 
@@ -125,12 +125,7 @@ fn test_replace() {
         },
     };
 
-    if let BinaryTree::Node {
-        val: _,
-        left: _,
-        right,
-    } = &mut tree1
-    {
+    if let BinaryTree::Node { right, .. } = &mut tree1 {
         (**right).replace(tree2); // tree1のルートの右を、Nilからtree2のルートに置き換える
     }
     assert_eq!(&tree1, &tree3);
