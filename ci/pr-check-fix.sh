@@ -8,7 +8,6 @@ travis_terminate() {
 }
 
 rustup component add rustfmt
-cargo readme > /dev/null || cargo install cargo-readme  # skip if already available
 
 ## Auto commit & push by CI
 (
