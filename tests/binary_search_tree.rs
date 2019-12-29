@@ -36,4 +36,3 @@ fn leetcode_938_range_sum_of_bst() {
     bst2.add(18);
     assert_eq!(bst2.get_range_sorted(&6, &10).into_iter().sum::<i32>(), 23);
 }
-
