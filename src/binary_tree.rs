@@ -20,10 +20,43 @@ impl<T> BinaryTree<T> {
     }
 }
 
-#[test]
-fn replace() {
-    use BinaryTree::{Nil, Node};
+#[macro_export]
+macro_rules! bin_tree {
+    (val: $val:expr, left: $left:expr, right: $right:expr,) => {
+        BinaryTree::Node {
+            val: $val,
+            left: Box::new($left),
+            right: Box::new($right),
+        }
+    };
 
+    (val: $val:expr, right: $right:expr,) => {
+        bin_tree! {
+            val: $val,
+            left: bin_tree!(),
+            right: $right,
+        }
+    };
+
+    (val: $val:expr, left: $left:expr,) => {
+        bin_tree! {
+            val: $val,
+            left: $left,
+            right: bin_tree!(),
+        }
+    };
+
+    (val: $val: expr) => {
+        bin_tree!(val: $val, left: bin_tree!(), right: bin_tree!(),)
+    };
+
+    () => {
+        BinaryTree::Nil
+    };
+}
+
+#[test]
+fn test_replace() {
     // tree1:
     //       5
     //      /
@@ -51,85 +84,48 @@ fn replace() {
     //
 
     // tree1 は後ほどルートの右のNilを置き換えるので、 mut でつくる。
-    let mut tree1 = BinaryTree::<i32>::Node {
+    let mut tree1 = bin_tree! {
         val: 5,
-        left: Box::new(BinaryTree::<i32>::Node {
+        left: bin_tree! {
             val: 4,
-            left: Box::new(BinaryTree::<i32>::Node {
+            left: bin_tree! {
                 val: 11,
-                left: Box::new(BinaryTree::<i32>::Node {
-                    val: 7,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-                right: Box::new(BinaryTree::<i32>::Node {
-                    val: 2,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-            }),
-            right: Box::new(Nil),
-        }),
-        right: Box::new(Nil),
+                left: bin_tree! { val: 7 },
+                right: bin_tree! { val: 2 },
+            },
+        },
     };
 
-    let tree2 = BinaryTree::<i32>::Node {
+    let tree2 = bin_tree! {
         val: 8,
-        left: Box::new(BinaryTree::<i32>::Node {
-            val: 13,
-            left: Box::new(Nil),
-            right: Box::new(Nil),
-        }),
-        right: Box::new(BinaryTree::<i32>::Node {
+        left: bin_tree! { val: 13 },
+        right: bin_tree! {
             val: 4,
-            left: Box::new(Nil),
-            right: Box::new(BinaryTree::<i32>::Node {
-                val: 1,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-        }),
+            right: bin_tree! { val: 1 },
+        },
     };
 
-    let tree3 = BinaryTree::<i32>::Node {
+    let tree3 = bin_tree! {
         val: 5,
-        left: Box::new(BinaryTree::<i32>::Node {
+        left: bin_tree! {
             val: 4,
-            left: Box::new(BinaryTree::<i32>::Node {
+            left: bin_tree! {
                 val: 11,
-                left: Box::new(BinaryTree::<i32>::Node {
-                    val: 7,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-                right: Box::new(BinaryTree::<i32>::Node {
-                    val: 2,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-            }),
-            right: Box::new(Nil),
-        }),
-        right: Box::new(BinaryTree::<i32>::Node {
+                left: bin_tree! { val: 7 },
+                right: bin_tree! { val: 2 },
+            },
+        },
+        right: bin_tree! {
             val: 8,
-            left: Box::new(BinaryTree::<i32>::Node {
-                val: 13,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-            right: Box::new(BinaryTree::<i32>::Node {
+            left: bin_tree! { val: 13 },
+            right: bin_tree! {
                 val: 4,
-                left: Box::new(Nil),
-                right: Box::new(BinaryTree::<i32>::Node {
-                    val: 1,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-            }),
-        }),
+                right: bin_tree!{ val: 1 },
+            },
+        },
     };
 
-    if let Node {
+    if let BinaryTree::Node {
         val: _,
         left: _,
         right,

@@ -1,4 +1,4 @@
-use data_structures_and_algorithms_rs::BinaryTree;
+use data_structures_and_algorithms_rs::{bin_tree, BinaryTree};
 
 #[test]
 fn leetcode_112_path_sum_dfs() {
@@ -46,42 +46,24 @@ fn leetcode_112_path_sum_dfs() {
     //  /  \      \
     // 7    2      1
     //
-    let root = BinaryTree::<i32>::Node {
+    let root = bin_tree! {
         val: 5,
-        left: Box::new(BinaryTree::<i32>::Node {
+        left: bin_tree! {
             val: 4,
-            left: Box::new(BinaryTree::<i32>::Node {
+            left: bin_tree! {
                 val: 11,
-                left: Box::new(BinaryTree::<i32>::Node {
-                    val: 7,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-                right: Box::new(BinaryTree::<i32>::Node {
-                    val: 2,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-            }),
-            right: Box::new(Nil),
-        }),
-        right: Box::new(BinaryTree::<i32>::Node {
+                left: bin_tree! { val: 7 },
+                right: bin_tree! { val: 2 },
+            },
+        },
+        right: bin_tree! {
             val: 8,
-            left: Box::new(BinaryTree::<i32>::Node {
-                val: 13,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-            right: Box::new(BinaryTree::<i32>::Node {
+            left: bin_tree! { val: 13 },
+            right: bin_tree! {
                 val: 4,
-                left: Box::new(Nil),
-                right: Box::new(BinaryTree::<i32>::Node {
-                    val: 1,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-            }),
-        }),
+                right: bin_tree! { val: 1 },
+            },
+        },
     };
 
     // 総和が22になるpathは存在する。
@@ -137,42 +119,24 @@ fn leetcode_112_path_sum_bfs() {
         false // キューは空になったが、目指す総和のpathは見つからなかった
     }
 
-    let root = BinaryTree::<i32>::Node {
+    let root = bin_tree! {
         val: 5,
-        left: Box::new(BinaryTree::<i32>::Node {
+        left: bin_tree! {
             val: 4,
-            left: Box::new(BinaryTree::<i32>::Node {
+            left: bin_tree! {
                 val: 11,
-                left: Box::new(BinaryTree::<i32>::Node {
-                    val: 7,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-                right: Box::new(BinaryTree::<i32>::Node {
-                    val: 2,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-            }),
-            right: Box::new(Nil),
-        }),
-        right: Box::new(BinaryTree::<i32>::Node {
+                left: bin_tree! { val: 7 },
+                right: bin_tree! { val: 2 },
+            },
+        },
+        right: bin_tree! {
             val: 8,
-            left: Box::new(BinaryTree::<i32>::Node {
-                val: 13,
-                left: Box::new(Nil),
-                right: Box::new(Nil),
-            }),
-            right: Box::new(BinaryTree::<i32>::Node {
+            left: bin_tree! { val: 13 },
+            right: bin_tree! {
                 val: 4,
-                left: Box::new(Nil),
-                right: Box::new(BinaryTree::<i32>::Node {
-                    val: 1,
-                    left: Box::new(Nil),
-                    right: Box::new(Nil),
-                }),
-            }),
-        }),
+                right: bin_tree! { val: 1 },
+            },
+        },
     };
     assert_eq!(has_path_sum(&root, 22), true);
 }
