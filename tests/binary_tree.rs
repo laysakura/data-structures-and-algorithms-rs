@@ -1,4 +1,4 @@
-use data_structures_and_algorithms_rs::{BinaryTree,binary_tree_node};
+use data_structures_and_algorithms_rs::{bin_tree, BinaryTree};
 
 #[test]
 fn leetcode_112_path_sum_dfs() {
@@ -46,22 +46,22 @@ fn leetcode_112_path_sum_dfs() {
     //  /  \      \
     // 7    2      1
     //
-    let root = BinaryTree::<i32>::Node {
+    let root = bin_tree! {
         val: 5,
-        left: binary_tree_node! {
+        left: bin_tree! {
             val: 4,
-            left: binary_tree_node! {
+            left: bin_tree! {
                 val: 11,
-                left: binary_tree_node! { val: 7 },
-                right: binary_tree_node! { val: 2 },
+                left: bin_tree! { val: 7 },
+                right: bin_tree! { val: 2 },
             },
         },
-        right: binary_tree_node! {
+        right: bin_tree! {
             val: 8,
-            left: binary_tree_node! { val: 13 },
-            right: binary_tree_node! {
+            left: bin_tree! { val: 13 },
+            right: bin_tree! {
                 val: 4,
-                right: binary_tree_node! { val: 1 },
+                right: bin_tree! { val: 1 },
             },
         },
     };
@@ -119,22 +119,22 @@ fn leetcode_112_path_sum_bfs() {
         false // キューは空になったが、目指す総和のpathは見つからなかった
     }
 
-    let root = BinaryTree::<i32>::Node {
+    let root = bin_tree! {
         val: 5,
-        left: binary_tree_node! {
+        left: bin_tree! {
             val: 4,
-            left: binary_tree_node! {
+            left: bin_tree! {
                 val: 11,
-                left: binary_tree_node! { val: 7 },
-                right: binary_tree_node! { val: 2 },
+                left: bin_tree! { val: 7 },
+                right: bin_tree! { val: 2 },
             },
         },
-        right: binary_tree_node! {
+        right: bin_tree! {
             val: 8,
-            left: binary_tree_node! { val: 13 },
-            right: binary_tree_node! {
+            left: bin_tree! { val: 13 },
+            right: bin_tree! {
                 val: 4,
-                right: binary_tree_node! { val: 1 },
+                right: bin_tree! { val: 1 },
             },
         },
     };
