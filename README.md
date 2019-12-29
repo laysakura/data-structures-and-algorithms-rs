@@ -1,7 +1,5 @@
 # data-structures-and-algorithms-rs
 
-[Master API Docs](https://laysakura.github.io/fid-rs/fid_rs/)
-
 [![Build Status](https://travis-ci.com/laysakura/data-structures-and-algorithms-rs.svg?branch=master)](https://travis-ci.com/laysakura/data-structures-and-algorithms-rs)
 [![Minimum rustc version](https://img.shields.io/badge/rustc-1.33+-lightgray.svg)](https://github.com/laysakura/data-structures-and-algorithms-rs#rust-version-supports)
 
