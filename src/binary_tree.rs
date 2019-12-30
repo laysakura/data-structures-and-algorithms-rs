@@ -126,7 +126,16 @@ fn test_replace() {
     };
 
     if let BinaryTree::Node { right, .. } = &mut tree1 {
-        (**right).replace(tree2); // tree1のルートの右を、Nilからtree2のルートに置き換える
+        // tree1のルートの右を、Nilからtree2のルートに置き換える。
+        //
+        // 型の解説:
+        //   right: &mut Box<BinaryTree>
+        //   *right: mut Box<BinaryTree>
+        //   **right: mut BinaryTree
+        //
+        // replaceは &mut BinaryTree をセルフとして受け取るので (&mut **right).replace と書くのが明示的だが、
+        // `.` 演算子が暗黙的に借用への変換を行ってくれる。
+        (**right).replace(tree2);
     }
     assert_eq!(&tree1, &tree3);
 }
