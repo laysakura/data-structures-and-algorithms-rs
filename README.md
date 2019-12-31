@@ -18,5 +18,4 @@
 
 ### Guidelines
 
-- Travis CI automatically does the following commit & push to your pull-requests:
-    - `$ cargo fmt --all`
+- Do not forget to format your code `$ cargo fmt --all` before push.  CI will check it.
