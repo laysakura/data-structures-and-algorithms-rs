@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BinarySearchTree","二分探索木。 あるノードと等しい値は、必ず左側の子ノード以下に入ることとする。"]]});
